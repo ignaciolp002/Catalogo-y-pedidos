@@ -1,11 +1,11 @@
 "use client";
 
-import React, { use } from "react";
+import React, { use, useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, ShoppingCart, MessageSquare, Shield, Truck, RotateCcw, Check } from "lucide-react";
-import { useCart } from "@/context/CartContext";
-import { SEED_PRODUCTS } from "@/data/products";
+import { ArrowLeft, ShoppingCart, MessageSquare, Shield, Truck, RotateCcw, Check, AlertCircle } from "lucide-react";
+import { useCart, Product } from "@/context/CartContext";
 import { shopConfig } from "@/config/shop";
+import { supabase } from "@/lib/supabase";
 
 interface PageProps {
   params: Promise<{
@@ -17,13 +17,56 @@ export default function ProductDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const { addToCart } = useCart();
 
-  const product = SEED_PRODUCTS.find((p) => p.id === id);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dbError, setDbError] = useState<string | null>(null);
 
-  if (!product) {
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        setIsLoading(true);
+        setDbError(null);
+
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+        setProduct(data);
+      } catch (err: any) {
+        console.error("Error loading product from Supabase:", err);
+        setDbError(err.message || "Error al conectar con la base de datos.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div style={styles.loadingContainer} className="container flex-center animate-fade-in">
+        <div style={styles.spinner} className="animate-spin"></div>
+        <p style={{ marginTop: "1.5rem", color: "var(--muted)", fontWeight: 500 }}>Cargando detalles del producto...</p>
+      </div>
+    );
+  }
+
+  if (dbError || !product) {
     return (
       <div style={styles.errorContainer} className="container animate-fade-in">
-        <h2 style={styles.errorTitle}>Producto no encontrado</h2>
-        <p style={styles.errorText}>Lo sentimos, el producto solicitado no existe o no está disponible actualmente.</p>
+        <AlertCircle size={48} color="var(--danger)" />
+        <h2 style={styles.errorTitle}>
+          {dbError ? "Error de conexión" : "Producto no encontrado"}
+        </h2>
+        <p style={styles.errorText}>
+          {dbError ? dbError : "Lo sentimos, el producto solicitado no existe o no está disponible actualmente."}
+        </p>
         <Link href="/" className="btn btn-primary">
           <ArrowLeft size={18} /> Volver al Catálogo
         </Link>
@@ -360,5 +403,20 @@ const styles = {
     fontSize: "1.1rem",
     color: "var(--muted)",
     maxWidth: "500px",
+  },
+  loadingContainer: {
+    padding: "6rem 0",
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "50vh",
+  },
+  spinner: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    border: "3px solid var(--card-border)",
+    borderTopColor: "var(--primary)",
   },
 };

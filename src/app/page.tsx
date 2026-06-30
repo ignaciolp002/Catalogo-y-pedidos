@@ -1,22 +1,63 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Search, SlidersHorizontal, Sparkles, AlertCircle } from "lucide-react";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import ProductCard from "@/components/ProductCard";
 import CartDrawer from "@/components/CartDrawer";
 import CheckoutModal from "@/components/CheckoutModal";
 import { Product } from "@/context/CartContext";
-import { SEED_CATEGORIES, SEED_PRODUCTS } from "@/data/products";
+import { Category } from "@/data/products";
+import { supabase } from "@/lib/supabase";
 
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dbError, setDbError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+        setDbError(null);
+
+        // Fetch categories from Supabase
+        const { data: catData, error: catError } = await supabase
+          .from("categories")
+          .select("*")
+          .order("name");
+        
+        if (catError) throw catError;
+
+        // Fetch active products from Supabase
+        const { data: prodData, error: prodError } = await supabase
+          .from("products")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
+
+        if (prodError) throw prodError;
+
+        setCategories(catData || []);
+        setProducts(prodData || []);
+      } catch (err: any) {
+        console.error("Error loading data from Supabase:", err);
+        setDbError(err.message || "Error al conectar con la base de datos.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   // Filtering products
   const filteredProducts = useMemo(() => {
-    return SEED_PRODUCTS.filter((product) => {
+    return products.filter((product) => {
       const matchesSearch = 
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -25,9 +66,10 @@ export default function Home() {
         selectedCategory === "all" || 
         product.category_id === selectedCategory;
 
-      return matchesSearch && matchesCategory && product.is_active;
+      return matchesSearch && matchesCategory;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [products, searchQuery, selectedCategory]);
+
 
   return (
     <div style={styles.pageWrapper}>
@@ -80,7 +122,7 @@ export default function Home() {
               >
                 Todos
               </button>
-              {SEED_CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
@@ -98,7 +140,18 @@ export default function Home() {
           </div>
 
           {/* Catalog Grid */}
-          {filteredProducts.length > 0 ? (
+          {isLoading ? (
+            <div style={styles.loadingContainer} className="flex-center animate-fade-in">
+              <div style={styles.spinner} className="animate-spin"></div>
+              <p style={{ marginTop: "1.5rem", color: "var(--muted)", fontWeight: 500 }}>Cargando catálogo consciente...</p>
+            </div>
+          ) : dbError ? (
+            <div style={styles.noResults} className="flex-center animate-fade-in">
+              <AlertCircle size={40} color="var(--danger)" style={{ marginBottom: "1rem" }} />
+              <h3>Error de conexión</h3>
+              <p>{dbError}</p>
+            </div>
+          ) : filteredProducts.length > 0 ? (
             <div className="grid-catalog">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
@@ -239,5 +292,19 @@ const styles = {
     marginTop: "1rem",
     padding: "0.5rem 1.25rem",
     fontSize: "0.85rem",
+  },
+  loadingContainer: {
+    padding: "6rem 0",
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  spinner: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    border: "3px solid var(--card-border)",
+    borderTopColor: "var(--primary)",
   },
 };

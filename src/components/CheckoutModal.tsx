@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, CheckCircle, MessageSquare, Loader2 } from "lucide-react";
+import { X, CheckCircle, MessageSquare, Loader2, AlertCircle } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { shopConfig } from "@/config/shop";
+import { supabase } from "@/lib/supabase";
 
 export default function CheckoutModal() {
-  const { 
-    cart, 
-    isCheckoutOpen, 
-    setIsCheckoutOpen, 
-    cartTotal, 
-    clearCart 
+  const {
+    cart,
+    isCheckoutOpen,
+    setIsCheckoutOpen,
+    cartTotal,
+    clearCart
   } = useCart();
 
   const [formData, setFormData] = useState({
@@ -23,12 +24,14 @@ export default function CheckoutModal() {
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [createdOrderId, setCreatedOrderId] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isCheckoutOpen) {
       document.body.style.overflow = "hidden";
       setStatus("idle"); // reset status when opened
+      setErrorMessage("");
     } else {
       document.body.style.overflow = "unset";
     }
@@ -51,15 +54,49 @@ export default function CheckoutModal() {
     if (!formData.name || !formData.phone || !formData.address) return;
 
     setStatus("loading");
+    setErrorMessage("");
 
-    // Simulate saving to database (e.g. Supabase DB insertion)
-    // Wait for 1.5 seconds to make it feel premium and performant
-    setTimeout(() => {
-      // Generate a random order ID (mocking database ID)
-      const orderId = Math.random().toString(36).substring(2, 10).toUpperCase();
-      setCreatedOrderId(orderId);
+    try {
+      // 1. Insert the order into Supabase
+      const { data: orderData, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          customer_name: formData.name,
+          customer_email: formData.email || null,
+          customer_phone: formData.phone,
+          customer_address: formData.address,
+          total_price: cartTotal,
+          status: "pending",
+        })
+        .select("id")
+        .single();
+
+      if (orderError) throw orderError;
+
+      const orderId = orderData.id;
+
+      // 2. Insert each cart item into order_items
+      const orderItems = cart.map((item) => ({
+        order_id: orderId,
+        product_id: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from("order_items")
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      // 3. Show short reference of the UUID for display
+      setCreatedOrderId(orderId.substring(0, 8).toUpperCase());
       setStatus("success");
-    }, 1500);
+    } catch (err: any) {
+      console.error("Error saving order to Supabase:", err);
+      setErrorMessage(err.message || "Ocurrió un error al registrar el pedido. Intenta nuevamente.");
+      setStatus("error");
+    }
   };
 
   const handleWhatsAppNotify = () => {
@@ -76,8 +113,8 @@ export default function CheckoutModal() {
     const totalStr = `${shopConfig.currencySymbol}${cartTotal.toFixed(2)}`;
 
     // Build complete message
-    const message = 
-`¡Hola! Acabo de registrar mi pedido en la web.
+    const message =
+      `¡Hola! Acabo de registrar mi pedido en la web.
 
 *ID del Pedido:* #${createdOrderId}
 *Detalles del pedido:*
@@ -93,26 +130,26 @@ ${formData.email ? `- *Email:* ${formData.email}\n` : ""}
 Por favor, coordinemos los detalles de pago y envío.`;
 
     const url = `https://wa.me/${shopConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
-    
+
     // Clear cart and close modal
     clearCart();
     setIsCheckoutOpen(false);
-    
+
     // Redirect to WhatsApp
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
     <div style={styles.overlay} onClick={() => setIsCheckoutOpen(false)}>
-      <div 
-        style={styles.modal} 
+      <div
+        style={styles.modal}
         onClick={(e) => e.stopPropagation()}
         className="animate-slide-up"
       >
         {/* Header */}
         <div style={styles.header}>
           <h2 style={styles.title}>Confirmar tu Pedido</h2>
-          <button 
+          <button
             onClick={() => setIsCheckoutOpen(false)}
             style={styles.closeBtn}
             className="flex-center"
@@ -206,9 +243,9 @@ Por favor, coordinemos los detalles de pago y envío.`;
                 </div>
               </div>
 
-              <button 
-                type="submit" 
-                style={styles.submitBtn} 
+              <button
+                type="submit"
+                style={styles.submitBtn}
                 className="btn btn-primary"
                 disabled={status === "loading"}
               >
@@ -222,6 +259,20 @@ Por favor, coordinemos los detalles de pago y envío.`;
                 )}
               </button>
             </form>
+          ) : status === "error" ? (
+            /* Error View */
+            <div style={styles.successContainer}>
+              <AlertCircle size={64} color="var(--danger)" style={{ marginBottom: "1.5rem" }} />
+              <h3 style={styles.successTitle}>Error al Registrar</h3>
+              <p style={styles.successText}>{errorMessage}</p>
+              <button
+                onClick={() => setStatus("idle")}
+                style={styles.submitBtn}
+                className="btn btn-secondary"
+              >
+                Intentar Nuevamente
+              </button>
+            </div>
           ) : (
             /* Success View */
             <div style={styles.successContainer}>
@@ -230,7 +281,7 @@ Por favor, coordinemos los detalles de pago y envío.`;
               <p style={styles.successText}>
                 Tu pedido <strong>#{createdOrderId}</strong> ha sido guardado en nuestro sistema.
               </p>
-              
+
               <div style={styles.instructionBox}>
                 <p style={styles.instructionTitle}>Siguiente Paso Obligatorio:</p>
                 <p style={styles.instructionText}>
@@ -238,7 +289,7 @@ Por favor, coordinemos los detalles de pago y envío.`;
                 </p>
               </div>
 
-              <button 
+              <button
                 onClick={handleWhatsAppNotify}
                 style={styles.whatsappBtn}
                 className="btn btn-whatsapp"
