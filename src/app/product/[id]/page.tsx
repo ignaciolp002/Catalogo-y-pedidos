@@ -158,10 +158,19 @@ export default function ProductDetailPage({ params }: PageProps) {
 
           {/* Action buttons */}
           <div style={styles.actionContainer}>
-            {product.is_customizable ? (
-              <div style={styles.customActionBox}>
+            <button
+              onClick={() => addToCart(product)}
+              className="btn btn-primary"
+              style={styles.actionBtn}
+            >
+              <ShoppingCart size={18} />
+              Agregar al Carrito
+            </button>
+
+            {product.is_customizable && (
+              <div style={{ ...styles.customActionBox, marginTop: "1rem" }}>
                 <p style={styles.customNotice}>
-                  Este producto se puede personalizar con tu logo, nombre o diseño preferido. Haz clic en el botón para coordinar por WhatsApp.
+                  Este producto se puede personalizar con tu logo, nombre o diseño preferido. Si lo deseas personalizado, agrégalo al carrito y coordinaremos los detalles, o consúltanos directamente por WhatsApp:
                 </p>
                 <button
                   onClick={handleWhatsAppInquiry}
@@ -172,15 +181,6 @@ export default function ProductDetailPage({ params }: PageProps) {
                   Personalizar por WhatsApp
                 </button>
               </div>
-            ) : (
-              <button
-                onClick={() => addToCart(product)}
-                className="btn btn-primary"
-                style={styles.actionBtn}
-              >
-                <ShoppingCart size={18} />
-                Agregar al Carrito
-              </button>
             )}
           </div>
 
@@ -268,7 +268,7 @@ const styles = {
   badge: {
     position: "absolute" as const,
     top: "1.5rem",
-    left: "1.5rem",
+    right: "1.5rem",
     fontSize: "0.8rem",
     padding: "0.4rem 0.8rem",
   },

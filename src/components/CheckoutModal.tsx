@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, CheckCircle, MessageSquare, Loader2, AlertCircle } from "lucide-react";
+import { X, CheckCircle, MessageSquare, Loader2, AlertCircle, Download } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { shopConfig } from "@/config/shop";
 import { supabase } from "@/lib/supabase";
+import { jsPDF } from "jspdf";
 
 export default function CheckoutModal() {
   const {
@@ -57,23 +58,23 @@ export default function CheckoutModal() {
     setErrorMessage("");
 
     try {
+      // Generar el UUID en el cliente para evitar requerir permisos de SELECT públicos en RLS
+      const orderId = crypto.randomUUID();
+
       // 1. Insert the order into Supabase
-      const { data: orderData, error: orderError } = await supabase
+      const { error: orderError } = await supabase
         .from("orders")
         .insert({
+          id: orderId,
           customer_name: formData.name,
           customer_email: formData.email || null,
           customer_phone: formData.phone,
           customer_address: formData.address,
           total_price: cartTotal,
           status: "pending",
-        })
-        .select("id")
-        .single();
+        });
 
       if (orderError) throw orderError;
-
-      const orderId = orderData.id;
 
       // 2. Insert each cart item into order_items
       const orderItems = cart.map((item) => ({
@@ -131,16 +132,162 @@ Por favor, coordinemos los detalles de pago y envío.`;
 
     const url = `https://wa.me/${shopConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-    // Clear cart and close modal
-    clearCart();
-    setIsCheckoutOpen(false);
-
     // Redirect to WhatsApp
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const handleClose = () => {
+    if (status === "success") {
+      clearCart();
+      setStatus("idle");
+    }
+    setIsCheckoutOpen(false);
+  };
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const primaryColor = [27, 138, 90]; 
+    const textColor = [18, 18, 18]; 
+    const lightGray = [245, 245, 245];
+    const borderGray = [220, 220, 220];
+
+    // Encabezado verde
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.rect(0, 0, 210, 35, "F");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.setTextColor(255, 255, 255);
+    doc.text("LineaVerde", 20, 22);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text("Consumo Consciente, Vida Sostenible", 20, 28);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("COMPROBANTE DE PEDIDO", 190, 18, { align: "right" });
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(`Pedido ID: #${createdOrderId}`, 190, 23, { align: "right" });
+    doc.text(`Fecha: ${new Date().toLocaleDateString("es-ES")}`, 190, 28, { align: "right" });
+
+    // Sección de Datos de Envío
+    doc.setFontSize(11);
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setFont("helvetica", "bold");
+    doc.text("DATOS DE ENVÍO", 20, 50);
+
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setLineWidth(0.4);
+    doc.line(20, 52, 190, 52);
+
+    doc.setFontSize(10);
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+    doc.setFont("helvetica", "normal");
+
+    let clientY = 58;
+    doc.setFont("helvetica", "bold"); doc.text("Nombre:", 20, clientY);
+    doc.setFont("helvetica", "normal"); doc.text(formData.name, 42, clientY);
+    clientY += 6;
+    
+    doc.setFont("helvetica", "bold"); doc.text("Teléfono:", 20, clientY);
+    doc.setFont("helvetica", "normal"); doc.text(formData.phone, 42, clientY);
+    clientY += 6;
+
+    if (formData.email) {
+      doc.setFont("helvetica", "bold"); doc.text("Email:", 20, clientY);
+      doc.setFont("helvetica", "normal"); doc.text(formData.email, 42, clientY);
+      clientY += 6;
+    }
+
+    doc.setFont("helvetica", "bold"); doc.text("Dirección:", 20, clientY);
+    doc.setFont("helvetica", "normal");
+    
+    const splitAddress = doc.splitTextToSize(formData.address, 140);
+    doc.text(splitAddress, 42, clientY);
+    clientY += (splitAddress.length * 5) + 5;
+
+    // Sección de Detalle de Productos
+    doc.setFontSize(11);
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setFont("helvetica", "bold");
+    doc.text("DETALLE DEL PEDIDO", 20, clientY);
+    doc.line(20, clientY + 2, 190, clientY + 2);
+    
+    let tableY = clientY + 8;
+
+    // Cabecera de la tabla
+    doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
+    doc.rect(20, tableY, 170, 8, "F");
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+    doc.text("PRODUCTO", 22, tableY + 5.5);
+    doc.text("CANTIDAD", 110, tableY + 5.5, { align: "center" });
+    doc.text("PRECIO UNIT.", 145, tableY + 5.5, { align: "right" });
+    doc.text("SUBTOTAL", 185, tableY + 5.5, { align: "right" });
+
+    tableY += 8;
+
+    doc.setFont("helvetica", "normal");
+    cart.forEach((item) => {
+      doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
+      doc.setLineWidth(0.15);
+      doc.line(20, tableY, 190, tableY);
+
+      const name = item.product.name;
+      const qty = item.quantity.toString();
+      const unitPrice = `${shopConfig.currencySymbol}${item.product.price.toFixed(2)}`;
+      const subtotal = `${shopConfig.currencySymbol}${(item.product.price * item.quantity).toFixed(2)}`;
+
+      doc.text(name, 22, tableY + 5.5);
+      doc.text(qty, 110, tableY + 5.5, { align: "center" });
+      doc.text(unitPrice, 145, tableY + 5.5, { align: "right" });
+      doc.text(subtotal, 185, tableY + 5.5, { align: "right" });
+
+      tableY += 8;
+    });
+
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setLineWidth(0.4);
+    doc.line(20, tableY, 190, tableY);
+
+    // Total
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.text(`TOTAL GENERAL:  ${shopConfig.currencySymbol}${cartTotal.toFixed(2)}`, 185, tableY + 7, { align: "right" });
+
+    // Mensaje de pie
+    const footerY = tableY + 25;
+    doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
+    doc.setLineWidth(0.15);
+    doc.line(20, footerY - 5, 190, footerY - 5);
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.text("¿Qué sigue ahora?", 20, footerY);
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 100, 100);
+    doc.text("1. Este comprobante certifica el registro del pedido en nuestro catálogo digital.", 20, footerY + 5);
+    doc.text("2. Por favor, pulsa el botón de WhatsApp en la web para coordinar el método de pago y el envío.", 20, footerY + 10);
+    doc.text("3. ¡Muchas gracias por elegir LineaVerde y apoyar el consumo sostenible!", 20, footerY + 15);
+
+    doc.save(`LineaVerde_Pedido_${createdOrderId}.pdf`);
+  };
+
   return (
-    <div style={styles.overlay} onClick={() => setIsCheckoutOpen(false)}>
+    <div style={styles.overlay} onClick={handleClose}>
       <div
         style={styles.modal}
         onClick={(e) => e.stopPropagation()}
@@ -150,7 +297,7 @@ Por favor, coordinemos los detalles de pago y envío.`;
         <div style={styles.header}>
           <h2 style={styles.title}>Confirmar tu Pedido</h2>
           <button
-            onClick={() => setIsCheckoutOpen(false)}
+            onClick={handleClose}
             style={styles.closeBtn}
             className="flex-center"
             disabled={status === "loading"}
@@ -289,14 +436,25 @@ Por favor, coordinemos los detalles de pago y envío.`;
                 </p>
               </div>
 
-              <button
-                onClick={handleWhatsAppNotify}
-                style={styles.whatsappBtn}
-                className="btn btn-whatsapp"
-              >
-                <MessageSquare size={18} />
-                Enviar Pedido por WhatsApp
-              </button>
+              <div style={styles.buttonGroup}>
+                <button
+                  onClick={handleWhatsAppNotify}
+                  style={styles.whatsappBtn}
+                  className="btn btn-whatsapp"
+                >
+                  <MessageSquare size={18} />
+                  Enviar Pedido por WhatsApp
+                </button>
+
+                <button
+                  onClick={handleDownloadPDF}
+                  style={styles.pdfBtn}
+                  className="btn btn-secondary"
+                >
+                  <Download size={18} />
+                  Descargar Comprobante (PDF)
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -474,6 +632,13 @@ const styles = {
     lineHeight: 1.5,
     margin: 0,
   },
+  buttonGroup: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "0.75rem",
+    width: "100%",
+    alignItems: "center",
+  },
   whatsappBtn: {
     width: "100%",
     maxWidth: "320px",
@@ -483,5 +648,18 @@ const styles = {
     gap: "0.5rem",
     padding: "0.9rem",
     fontSize: "1rem",
+  },
+  pdfBtn: {
+    width: "100%",
+    maxWidth: "320px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "0.5rem",
+    padding: "0.9rem",
+    fontSize: "1rem",
+    borderColor: "var(--card-border)",
+    background: "transparent",
+    color: "var(--foreground)",
   }
 };

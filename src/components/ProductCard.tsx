@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ShoppingCart, MessageSquare } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { useCart, Product } from "@/context/CartContext";
 import { shopConfig } from "@/config/shop";
 
@@ -12,12 +12,6 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
-
-  const handleWhatsAppInquiry = () => {
-    const message = shopConfig.whatsappMessages.productQuery(product.name);
-    const url = `https://wa.me/${shopConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
 
   return (
     <div className="card animate-slide-up">
@@ -61,27 +55,15 @@ export default function ProductCard({ product }: ProductCardProps) {
             {shopConfig.currencySymbol}{product.price.toFixed(2)}
           </span>
 
-          {product.is_customizable ? (
-            <button
-              onClick={handleWhatsAppInquiry}
-              style={{ ...styles.actionBtn, backgroundColor: "var(--whatsapp)" }}
-              className="btn btn-whatsapp"
-              title="Preguntar en WhatsApp"
-            >
-              <MessageSquare size={16} color="#fff" />
-              <span style={styles.btnText}>Cotizar</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => addToCart(product)}
-              style={styles.actionBtn}
-              className="btn btn-primary"
-              title="Añadir al carrito"
-            >
-              <ShoppingCart size={16} />
-              <span style={styles.btnText}>Agregar</span>
-            </button>
-          )}
+          <button
+            onClick={() => addToCart(product)}
+            style={styles.actionBtn}
+            className="btn btn-primary"
+            title="Añadir al carrito"
+          >
+            <ShoppingCart size={16} />
+            <span style={styles.btnText}>Agregar</span>
+          </button>
         </div>
       </div>
     </div>
@@ -112,7 +94,7 @@ const styles = {
   badge: {
     position: "absolute" as const,
     top: "12px",
-    left: "12px",
+    right: "12px",
     padding: "0.25rem 0.6rem",
     borderRadius: "20px",
     fontSize: "0.7rem",
