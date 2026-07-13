@@ -1,16 +1,9 @@
 "use client";
 
 import React from "react";
-import { Leaf, MapPin, Phone, Mail, MessageCircle, Globe, Award, Heart, ShieldCheck } from "lucide-react";
-import { shopConfig } from "@/config/shop";
+import { Leaf, Globe, Award, Heart, ShieldCheck } from "lucide-react";
 
 export default function AboutPage() {
-  const handleWhatsAppRedirect = () => {
-    const encodedText = encodeURIComponent("¡Hola! Me gustaría conocer más sobre sus productos sostenibles.");
-    const url = `https://wa.me/${shopConfig.whatsappNumber}?text=${encodedText}`;
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
   return (
     <div style={styles.pageWrapper}>
       {/* Hero Section */}
@@ -75,74 +68,6 @@ export default function AboutPage() {
                   <strong>Impacto Global:</strong> Fomentamos prácticas éticas en toda nuestra cadena de valor.
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Ubicación y Contacto */}
-      <section className="container" style={styles.section}>
-        <h2 style={styles.sectionTitle}>Ubicación y Contacto</h2>
-        <div style={styles.gridContact}>
-          {/* Info block */}
-          <div style={styles.contactInfo} className="card">
-            <div style={styles.infoRow}>
-              <MapPin size={24} color="var(--primary)" style={{ flexShrink: 0 }} />
-              <div>
-                <h4 style={styles.infoTitle}>Dirección Comercial</h4>
-                <p style={styles.infoText}>Av. Principal 123, Miraflores, Lima, Perú</p>
-              </div>
-            </div>
-
-            <div style={styles.infoRow}>
-              <Phone size={24} color="var(--primary)" style={{ flexShrink: 0 }} />
-              <div>
-                <h4 style={styles.infoTitle}>Teléfono / WhatsApp</h4>
-                <p style={styles.infoText}>+51 987 654 321</p>
-              </div>
-            </div>
-
-            <div style={styles.infoRow}>
-              <Mail size={24} color="var(--primary)" style={{ flexShrink: 0 }} />
-              <div>
-                <h4 style={styles.infoTitle}>Correo Electrónico</h4>
-                <p style={styles.infoText}>contacto@lineaverde.com</p>
-              </div>
-            </div>
-
-            <div style={{ marginTop: "1rem" }}>
-              <h4 style={styles.infoTitle}>Nuestras Redes Sociales</h4>
-              <div style={styles.socialIcons}>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={styles.socialBtn} className="btn-icon flex-center" aria-label="Instagram">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={styles.socialBtn} className="btn-icon flex-center" aria-label="Facebook">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                </a>
-                <a onClick={handleWhatsAppRedirect} style={styles.socialBtn} className="btn-icon flex-center" aria-label="WhatsApp" role="button">
-                  <MessageCircle size={20} />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Map Mockup */}
-          <div style={styles.mapContainer} className="card">
-            <div style={styles.mapHeader}>
-              <MapPin size={18} color="var(--primary)" />
-              <span>Mapa de Referencia</span>
-            </div>
-            <div style={styles.mapFramePlaceholder} className="flex-center">
-              {/* Modern embedded Google Map placeholder */}
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3901.3789467775586!2d-77.0315229241031!3d-12.120468988122394!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c7fe226e6ef3%3A0xe5a36371cb14e210!2sMiraflores!5e0!3m2!1ses-419!2spe!4v1700000000000!5m2!1ses-419!2spe"
-                width="100%"
-                height="100%"
-                style={{ border: 0, borderRadius: "0 0 var(--radius-lg) var(--radius-lg)" }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
             </div>
           </div>
         </div>
@@ -249,59 +174,5 @@ const styles = {
     fontSize: "0.95rem",
     color: "var(--muted)",
     lineHeight: 1.5,
-  },
-  contactInfo: {
-    padding: "2rem",
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "1.5rem",
-    justifyContent: "center",
-  },
-  infoRow: {
-    display: "flex",
-    gap: "1rem",
-    alignItems: "flex-start",
-  },
-  infoTitle: {
-    fontSize: "0.95rem",
-    fontWeight: 700,
-    color: "var(--foreground)",
-    margin: "0 0 0.25rem 0",
-  },
-  infoText: {
-    fontSize: "0.9rem",
-    color: "var(--muted)",
-    margin: 0,
-  },
-  socialIcons: {
-    display: "flex",
-    gap: "0.75rem",
-    marginTop: "0.75rem",
-  },
-  socialBtn: {
-    cursor: "pointer",
-    transition: "transform var(--transition-fast)",
-    ":hover": {
-      transform: "scale(1.1)",
-    },
-  },
-  mapContainer: {
-    display: "flex",
-    flexDirection: "column" as const,
-    overflow: "hidden",
-    height: "350px",
-  },
-  mapHeader: {
-    padding: "1rem 1.5rem",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    fontWeight: 600,
-    borderBottom: "1px solid var(--card-border)",
-    fontSize: "0.95rem",
-  },
-  mapFramePlaceholder: {
-    flex: 1,
-    background: "var(--muted-light)",
   },
 };

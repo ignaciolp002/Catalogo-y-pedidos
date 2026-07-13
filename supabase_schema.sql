@@ -128,26 +128,41 @@ CREATE POLICY "Administradores control total items" ON order_items
 
 -- ====================================================================
 -- SECCIÓN 3: DATOS DE PRUEBA (MOCK DATA)
--- Usamos identificadores UUID fijos para que el script pueda ejecutarse
--- varias veces sin causar errores de duplicación de llaves primarias.
+-- Limpiamos datos anteriores para evitar conflictos y cargamos el nuevo catálogo.
 -- ====================================================================
 
--- 1. Insertar Categorías
-INSERT INTO categories (id, name, slug) VALUES
-('c1b9b6be-d8a4-473d-8ab1-19d264feee60', 'Cuidado Personal', 'cuidado-personal'),
-('c2b9b6be-d8a4-473d-8ab1-19d264feee61', 'Hogar y Cocina', 'hogar-y-cocina'),
-('c3b9b6be-d8a4-473d-8ab1-19d264feee62', 'Accesorios', 'accesorios')
-ON CONFLICT (id) DO NOTHING;
+-- 1. Limpieza de datos antiguos
+TRUNCATE TABLE order_items CASCADE;
+TRUNCATE TABLE orders CASCADE;
+DELETE FROM products;
+DELETE FROM categories;
 
--- 2. Insertar Productos
+-- 2. Insertar Nuevas Categorías
+INSERT INTO categories (id, name, slug) VALUES
+('c1b9b6be-d8a4-473d-8ab1-19d264feee71', 'Corporativo', 'corporativo'),
+('c1b9b6be-d8a4-473d-8ab1-19d264feee72', 'Línea Verde', 'linea-verde'),
+('c1b9b6be-d8a4-473d-8ab1-19d264feee73', 'Puestos de Venta', 'puestos-de-venta'),
+('c1b9b6be-d8a4-473d-8ab1-19d264feee74', 'Stands', 'stands'),
+('c1b9b6be-d8a4-473d-8ab1-19d264feee75', 'Cumpleaños', 'cumpleanos'),
+('c1b9b6be-d8a4-473d-8ab1-19d264feee76', 'Para Niños', 'para-ninos');
+
+-- 3. Insertar Nuevos Productos (Sin imagen de momento)
 INSERT INTO products (id, category_id, name, description, price, image_url, is_active, is_customizable) VALUES
--- Cuidado Personal
-('d1b9b6be-d8a4-473d-8ab1-19d264feee01', 'c1b9b6be-d8a4-473d-8ab1-19d264feee60', 'Cepillo de Dientes de Bambú', 'Cepillo de dientes biodegradable de bambú Moso con cerdas suaves de carbón activado.', 3.50, 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=600&q=80', true, false),
-('d1b9b6be-d8a4-473d-8ab1-19d264feee02', 'c1b9b6be-d8a4-473d-8ab1-19d264feee60', 'Shampoo en Barra de Hierbas', 'Shampoo sólido orgánico a base de romero, menta y ortiga. Rinde hasta 80 lavados sin envase plástico.', 8.90, 'https://images.unsplash.com/photo-1607006342411-9c3f57e2fa01?auto=format&fit=crop&w=600&q=80', true, false),
--- Hogar y Cocina
-('d1b9b6be-d8a4-473d-8ab1-19d264feee03', 'c2b9b6be-d8a4-473d-8ab1-19d264feee61', 'Termo de Acero Inoxidable', 'Termo de doble pared de 500ml. Mantiene bebidas frías por 24 horas y calientes por 12 horas. Grabado personalizado disponible.', 18.00, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80', true, true),
-('d1b9b6be-d8a4-473d-8ab1-19d264feee04', 'c2b9b6be-d8a4-473d-8ab1-19d264feee61', 'Set de Bolsas Reutilizables', 'Pack de 5 bolsas de algodón orgánico de malla para frutas y verduras. Lavables y duraderas.', 12.00, 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80', true, false),
--- Accesorios
-('d1b9b6be-d8a4-473d-8ab1-19d264feee05', 'c3b9b6be-d8a4-473d-8ab1-19d264feee62', 'Bolso Tote de Lona Orgánica', 'Bolso tote de algodón 100% orgánico, resistente y espacioso. Estampado personalizable para eventos o regalos.', 10.50, 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80', true, true),
-('d1b9b6be-d8a4-473d-8ab1-19d264feee06', 'c3b9b6be-d8a4-473d-8ab1-19d264feee62', 'Llavero de Madera Grabado', 'Llavero artesanal hecho con madera recuperada. Diseño totalmente personalizable bajo pedido por WhatsApp.', 4.50, 'https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=600&q=80', true, true)
-ON CONFLICT (id) DO NOTHING;
+-- Corporativo
+('d1b9b6be-d8a4-473d-8ab1-19d264feee71', 'c1b9b6be-d8a4-473d-8ab1-19d264feee71', 'Regalos Corporativos Sostenibles', 'Sets de oficina ecológicos personalizados con el logo de tu empresa. Incluye libreta de corcho y bolígrafo de bambú.', 15.00, NULL, true, true),
+('d1b9b6be-d8a4-473d-8ab1-19d264feee72', 'c1b9b6be-d8a4-473d-8ab1-19d264feee71', 'Welcome Packs Ecológicos', 'Kit de bienvenida para nuevos colaboradores. Incluye termo de acero inoxidable de doble pared y bolso tote de lona orgánica.', 25.00, NULL, true, true),
+-- Línea Verde
+('d1b9b6be-d8a4-473d-8ab1-19d264feee73', 'c1b9b6be-d8a4-473d-8ab1-19d264feee72', 'Kit Basura Cero (Zero Waste)', 'Pack de bolsas de malla para compras, pajitas de acero inoxidable con limpiador y envoltorios reutilizables de cera de abejas.', 19.90, NULL, true, false),
+('d1b9b6be-d8a4-473d-8ab1-19d264feee74', 'c1b9b6be-d8a4-473d-8ab1-19d264feee72', 'Jabones Orgánicos Exfoliantes', 'Set de 3 jabones artesanales exfoliantes a base de avena, caléndula, coco y aceites esenciales. 100% biodegradables.', 12.00, NULL, true, false),
+-- Puestos de Venta
+('d1b9b6be-d8a4-473d-8ab1-19d264feee75', 'c1b9b6be-d8a4-473d-8ab1-19d264feee73', 'Exhibidor Sostenible de Mesa', 'Exhibidor rústico y modular de madera recuperada para productos pequeños en cajas registradoras o mostradores.', 45.00, NULL, true, true),
+('d1b9b6be-d8a4-473d-8ab1-19d264feee76', 'c1b9b6be-d8a4-473d-8ab1-19d264feee73', 'Letreros de Madera Grabados', 'Carteles informativos o de precios hechos de bambú grabado con láser. Ideales para comunicar la sostenibilidad en tienda.', 18.00, NULL, true, true),
+-- Stands
+('d1b9b6be-d8a4-473d-8ab1-19d264feee77', 'c1b9b6be-d8a4-473d-8ab1-19d264feee74', 'Stand Ecológico Desmontable', 'Estructura modular resistente de cartón prensado y madera certificada. Fácil de transportar y armar en ferias comerciales.', 150.00, NULL, true, true),
+('d1b9b6be-d8a4-473d-8ab1-19d264feee78', 'c1b9b6be-d8a4-473d-8ab1-19d264feee74', 'Banner Roll-Up de Bambú', 'Soporte publicitario elegante de bambú con lona de algodón orgánico. Estampado con tintas ecológicas no tóxicas.', 85.00, NULL, true, true),
+-- Cumpleaños
+('d1b9b6be-d8a4-473d-8ab1-19d264feee79', 'c1b9b6be-d8a4-473d-8ab1-19d264feee75', 'Recuerdos de Cumpleaños Sostenibles', 'Mini suculentas en macetas biodegradables de fibra de coco, con etiquetas personalizadas impresas en papel semilla.', 4.00, NULL, true, true),
+('d1b9b6be-d8a4-473d-8ab1-19d264feee80', 'c1b9b6be-d8a4-473d-8ab1-19d264feee75', 'Kit de Fiesta Residuo Cero', 'Platos de hoja de palmera, vasos biodegradables y cubiertos de madera de abedul para 10 personas. Compostables tras su uso.', 22.00, NULL, true, false),
+-- Para Niños
+('d1b9b6be-d8a4-473d-8ab1-19d264feee81', 'c1b9b6be-d8a4-473d-8ab1-19d264feee76', 'Set de Cubiertos Infantiles de Bambú', 'Tenedor, cuchara y cuchillo de bambú suave con bordes redondeados y estuche de tela de algodón lavable.', 9.50, NULL, true, false),
+('d1b9b6be-d8a4-473d-8ab1-19d264feee82', 'c1b9b6be-d8a4-473d-8ab1-19d264feee76', 'Juguete de Madera Didáctico', 'Bloques de construcción de formas geométricas hechos de madera reforestada. Pintados a mano con tintas no tóxicas al agua.', 14.90, NULL, true, false);

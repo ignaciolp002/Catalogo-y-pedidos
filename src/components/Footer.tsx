@@ -3,7 +3,7 @@ import { Leaf, Phone, Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer style={footerStyles.footer} id="contacto">
+    <footer style={footerStyles.footer}>
       <div className="container" style={footerStyles.container}>
         <div style={footerStyles.grid}>
           {/* Brand Info */}
@@ -21,10 +21,10 @@ export default function Footer() {
           <div style={footerStyles.col}>
             <h4 style={footerStyles.title}>Catálogo</h4>
             <ul style={footerStyles.list}>
-              <li><a href="#" style={footerStyles.link}>Todos los Productos</a></li>
-              <li><a href="#" style={footerStyles.link}>Cuidado Personal</a></li>
-              <li><a href="#" style={footerStyles.link}>Hogar y Cocina</a></li>
-              <li><a href="#" style={footerStyles.link}>Accesorios</a></li>
+              <li><a href="/" style={footerStyles.link}>Todos los Productos</a></li>
+              <li><a href="/" style={footerStyles.link}>Cuidado Personal</a></li>
+              <li><a href="/" style={footerStyles.link}>Hogar y Cocina</a></li>
+              <li><a href="/" style={footerStyles.link}>Accesorios</a></li>
             </ul>
           </div>
 

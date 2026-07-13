@@ -24,7 +24,7 @@ export default function Navbar() {
         <nav style={navbarStyles.nav}>
           <a href="/" style={navbarStyles.navLink}>Catálogo</a>
           <a href="/about" style={navbarStyles.navLink}>Quiénes Somos</a>
-          <a href="#contacto" style={navbarStyles.navLink}>Contacto</a>
+          <a href="/contact" style={navbarStyles.navLink}>Contacto</a>
         </nav>
 
         {/* Cart button */}

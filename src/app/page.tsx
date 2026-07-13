@@ -7,7 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import CartDrawer from "@/components/CartDrawer";
 import CheckoutModal from "@/components/CheckoutModal";
 import { Product } from "@/context/CartContext";
-import { Category } from "@/data/products";
+import { Category, SEED_CATEGORIES, SEED_PRODUCTS } from "@/data/products";
 import { supabase } from "@/lib/supabase";
 
 
@@ -30,8 +30,6 @@ export default function Home() {
           .from("categories")
           .select("*")
           .order("name");
-        
-        if (catError) throw catError;
 
         // Fetch active products from Supabase
         const { data: prodData, error: prodError } = await supabase
@@ -40,13 +38,22 @@ export default function Home() {
           .eq("is_active", true)
           .order("created_at", { ascending: false });
 
-        if (prodError) throw prodError;
+        if (catError || prodError) {
+          throw new Error(catError?.message || prodError?.message || "Error al conectar con la base de datos.");
+        }
 
-        setCategories(catData || []);
-        setProducts(prodData || []);
+        if (catData && catData.length > 0) {
+          setCategories(catData);
+          setProducts(prodData || []);
+        } else {
+          // If the database tables are empty, load seed data
+          setCategories(SEED_CATEGORIES);
+          setProducts(SEED_PRODUCTS);
+        }
       } catch (err: any) {
-        console.error("Error loading data from Supabase:", err);
-        setDbError(err.message || "Error al conectar con la base de datos.");
+        console.warn("Error loading data from Supabase, using local fallback seed data:", err);
+        setCategories(SEED_CATEGORIES);
+        setProducts(SEED_PRODUCTS);
       } finally {
         setIsLoading(false);
       }

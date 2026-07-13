@@ -151,8 +151,8 @@ Por favor, coordinemos los detalles de pago y envío.`;
       format: "a4",
     });
 
-    const primaryColor = [27, 138, 90]; 
-    const textColor = [18, 18, 18]; 
+    const primaryColor = [27, 138, 90];
+    const textColor = [18, 18, 18];
     const lightGray = [245, 245, 245];
     const borderGray = [220, 220, 220];
 
@@ -172,7 +172,7 @@ Por favor, coordinemos los detalles de pago y envío.`;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.text("COMPROBANTE DE PEDIDO", 190, 18, { align: "right" });
-    
+
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.text(`Pedido ID: #${createdOrderId}`, 190, 23, { align: "right" });
@@ -196,7 +196,7 @@ Por favor, coordinemos los detalles de pago y envío.`;
     doc.setFont("helvetica", "bold"); doc.text("Nombre:", 20, clientY);
     doc.setFont("helvetica", "normal"); doc.text(formData.name, 42, clientY);
     clientY += 6;
-    
+
     doc.setFont("helvetica", "bold"); doc.text("Teléfono:", 20, clientY);
     doc.setFont("helvetica", "normal"); doc.text(formData.phone, 42, clientY);
     clientY += 6;
@@ -209,7 +209,7 @@ Por favor, coordinemos los detalles de pago y envío.`;
 
     doc.setFont("helvetica", "bold"); doc.text("Dirección:", 20, clientY);
     doc.setFont("helvetica", "normal");
-    
+
     const splitAddress = doc.splitTextToSize(formData.address, 140);
     doc.text(splitAddress, 42, clientY);
     clientY += (splitAddress.length * 5) + 5;
@@ -220,13 +220,13 @@ Por favor, coordinemos los detalles de pago y envío.`;
     doc.setFont("helvetica", "bold");
     doc.text("DETALLE DEL PEDIDO", 20, clientY);
     doc.line(20, clientY + 2, 190, clientY + 2);
-    
+
     let tableY = clientY + 8;
 
     // Cabecera de la tabla
     doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
     doc.rect(20, tableY, 170, 8, "F");
-    
+
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(textColor[0], textColor[1], textColor[2]);

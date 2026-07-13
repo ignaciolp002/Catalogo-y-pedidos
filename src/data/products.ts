@@ -7,70 +7,144 @@ export interface Category {
 }
 
 export const SEED_CATEGORIES: Category[] = [
-  { id: "c1b9b6be-d8a4-473d-8ab1-19d264feee60", name: "Cuidado Personal", slug: "cuidado-personal" },
-  { id: "c2b9b6be-d8a4-473d-8ab1-19d264feee61", name: "Hogar y Cocina", slug: "hogar-y-cocina" },
-  { id: "c3b9b6be-d8a4-473d-8ab1-19d264feee62", name: "Accesorios", slug: "accesorios" }
+  { id: "c1b9b6be-d8a4-473d-8ab1-19d264feee71", name: "Corporativo", slug: "corporativo" },
+  { id: "c1b9b6be-d8a4-473d-8ab1-19d264feee72", name: "Línea Verde", slug: "linea-verde" },
+  { id: "c1b9b6be-d8a4-473d-8ab1-19d264feee73", name: "Puestos de Venta", slug: "puestos-de-venta" },
+  { id: "c1b9b6be-d8a4-473d-8ab1-19d264feee74", name: "Stands", slug: "stands" },
+  { id: "c1b9b6be-d8a4-473d-8ab1-19d264feee75", name: "Cumpleaños", slug: "cumpleanos" },
+  { id: "c1b9b6be-d8a4-473d-8ab1-19d264feee76", name: "Para Niños", slug: "para-ninos" }
 ];
 
 export const SEED_PRODUCTS: Product[] = [
+  // 1. Corporativo
   {
-    id: "p1",
-    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee60",
-    name: "Cepillo de Dientes de Bambú",
-    description: "Cepillo de dientes biodegradable de bambú Moso con cerdas suaves de carbón activado.",
-    price: 3.50,
-    image_url: "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=600&q=80",
-    is_active: true,
-    is_customizable: false
-  },
-  {
-    id: "p2",
-    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee60",
-    name: "Shampoo en Barra de Hierbas",
-    description: "Shampoo sólido orgánico a base de romero, menta y ortiga. Rinde hasta 80 lavados sin envase plástico.",
-    price: 8.90,
-    image_url: "https://images.unsplash.com/photo-1607006342411-9c3f57e2fa01?auto=format&fit=crop&w=600&q=80",
-    is_active: true,
-    is_customizable: false
-  },
-  {
-    id: "p3",
-    category_id: "c2b9b6be-d8a4-473d-8ab1-19d264feee61",
-    name: "Termo de Acero Inoxidable",
-    description: "Termo de doble pared de 500ml. Mantiene bebidas frías por 24 horas y calientes por 12 horas. Grabado personalizado disponible.",
-    price: 18.00,
-    image_url: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80",
+    id: "p_corp_1",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee71",
+    name: "Regalos Corporativos Sostenibles",
+    description: "Sets de oficina ecológicos personalizados con el logo de tu empresa. Incluye libreta de corcho y bolígrafo de bambú.",
+    price: 15.00,
+    image_url: "",
     is_active: true,
     is_customizable: true
   },
   {
-    id: "p4",
-    category_id: "c2b9b6be-d8a4-473d-8ab1-19d264feee61",
-    name: "Set de Bolsas Reutilizables",
-    description: "Pack de 5 bolsas de algodón orgánico de malla para frutas y verduras. Lavables y duraderas.",
+    id: "p_corp_2",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee71",
+    name: "Welcome Packs Ecológicos",
+    description: "Kit de bienvenida para nuevos colaboradores. Incluye termo de acero inoxidable de doble pared y bolso tote de lona orgánica.",
+    price: 25.00,
+    image_url: "",
+    is_active: true,
+    is_customizable: true
+  },
+
+  // 2. Línea Verde
+  {
+    id: "p_lv_1",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee72",
+    name: "Kit Basura Cero (Zero Waste)",
+    description: "Pack de bolsas de malla para compras, pajitas de acero inoxidable con limpiador y envoltorios reutilizables de cera de abejas.",
+    price: 19.90,
+    image_url: "",
+    is_active: true,
+    is_customizable: false
+  },
+  {
+    id: "p_lv_2",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee72",
+    name: "Jabones Orgánicos Exfoliantes",
+    description: "Set de 3 jabones artesanales exfoliantes a base de avena, caléndula, coco y aceites esenciales. 100% biodegradables.",
     price: 12.00,
-    image_url: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80",
+    image_url: "",
+    is_active: true,
+    is_customizable: false
+  },
+
+  // 3. Puestos de Venta
+  {
+    id: "p_pv_1",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee73",
+    name: "Exhibidor Sostenible de Mesa",
+    description: "Exhibidor rústico y modular de madera recuperada para productos pequeños en cajas registradoras o mostradores.",
+    price: 45.00,
+    image_url: "",
+    is_active: true,
+    is_customizable: true
+  },
+  {
+    id: "p_pv_2",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee73",
+    name: "Letreros de Madera Grabados",
+    description: "Carteles informativos o de precios hechos de bambú grabado con láser. Ideales para comunicar la sostenibilidad en tienda.",
+    price: 18.00,
+    image_url: "",
+    is_active: true,
+    is_customizable: true
+  },
+
+  // 4. Stands
+  {
+    id: "p_std_1",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee74",
+    name: "Stand Ecológico Desmontable",
+    description: "Estructura modular resistente de cartón prensado y madera certificada. Fácil de transportar y armar en ferias comerciales.",
+    price: 150.00,
+    image_url: "",
+    is_active: true,
+    is_customizable: true
+  },
+  {
+    id: "p_std_2",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee74",
+    name: "Banner Roll-Up de Bambú",
+    description: "Soporte publicitario elegante de bambú con lona de algodón orgánico. Estampado con tintas ecológicas no tóxicas.",
+    price: 85.00,
+    image_url: "",
+    is_active: true,
+    is_customizable: true
+  },
+
+  // 5. Cumpleaños
+  {
+    id: "p_cump_1",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee75",
+    name: "Recuerdos de Cumpleaños Sostenibles",
+    description: "Mini suculentas en macetas biodegradables de fibra de coco, con etiquetas personalizadas impresas en papel semilla.",
+    price: 4.00,
+    image_url: "",
+    is_active: true,
+    is_customizable: true
+  },
+  {
+    id: "p_cump_2",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee75",
+    name: "Kit de Fiesta Residuo Cero",
+    description: "Platos de hoja de palmera, vasos biodegradables y cubiertos de madera de abedul para 10 personas. Compostables tras su uso.",
+    price: 22.00,
+    image_url: "",
+    is_active: true,
+    is_customizable: false
+  },
+
+  // 6. Para Niños
+  {
+    id: "p_ninos_1",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee76",
+    name: "Set de Cubiertos Infantiles de Bambú",
+    description: "Tenedor, cuchara y cuchillo de bambú suave con bordes redondeados y estuche de tela de algodón lavable.",
+    price: 9.50,
+    image_url: "",
     is_active: true,
     is_customizable: false
   },
   {
-    id: "p5",
-    category_id: "c3b9b6be-d8a4-473d-8ab1-19d264feee62",
-    name: "Bolso Tote de Lona Orgánica",
-    description: "Bolso tote de algodón 100% orgánico, resistente y espacioso. Estampado personalizable para eventos o regalos.",
-    price: 10.50,
-    image_url: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80",
+    id: "p_ninos_2",
+    category_id: "c1b9b6be-d8a4-473d-8ab1-19d264feee76",
+    name: "Juguete de Madera Didáctico",
+    description: "Bloques de construcción de formas geométricas hechos de madera reforestada. Pintados a mano con tintas no tóxicas al agua.",
+    price: 14.90,
+    image_url: "",
     is_active: true,
-    is_customizable: true
-  },
-  {
-    id: "p6",
-    category_id: "c3b9b6be-d8a4-473d-8ab1-19d264feee62",
-    name: "Llavero de Madera Grabado",
-    description: "Llavero artesanal hecho con madera recuperada. Diseño totalmente personalizable bajo pedido por WhatsApp.",
-    price: 4.50,
-    image_url: "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=600&q=80",
-    is_active: true,
-    is_customizable: true
+    is_customizable: false
   }
 ];
