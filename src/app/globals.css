@@ -2,10 +2,10 @@
 
 :root {
   /* Colors - Light Theme */
-  --primary-hsl: 142, 72%, 43%;
+  --primary-hsl: 173, 67%, 42%;
   --primary: hsl(var(--primary-hsl));
-  --primary-hover: hsl(142, 72%, 36%);
-  --primary-light: hsl(142, 72%, 95%);
+  --primary-hover: hsl(173, 67%, 34%);
+  --primary-light: hsl(173, 67%, 95%);
   --primary-glow: hsla(var(--primary-hsl), 0.15);
 
   --whatsapp-hsl: 142, 70%, 38%;
@@ -65,7 +65,7 @@
     --muted-light: hsl(120, 8%, 15%);
     --border: hsl(120, 8%, 18%);
     
-    --primary-light: hsl(142, 72%, 12%);
+    --primary-light: hsl(173, 67%, 12%);
     --primary-glow: hsla(var(--primary-hsl), 0.25);
     
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);

@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { Leaf, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import Logo from "./Logo";
 
 export default function Navbar() {
   const { cartCount, setIsCartOpen } = useCart();
@@ -11,13 +12,8 @@ export default function Navbar() {
     <header style={navbarStyles.header} className="glass-panel">
       <div style={navbarStyles.container} className="container">
         {/* Brand Logo */}
-        <div style={navbarStyles.logoContainer}>
-          <div style={navbarStyles.iconWrapper}>
-            <Leaf size={22} color="var(--primary)" />
-          </div>
-          <span style={navbarStyles.brandName}>
-            Linea<span style={{ color: "var(--primary)" }}>Verde</span>
-          </span>
+        <div style={navbarStyles.logoContainer} onClick={() => window.location.href = "/"}>
+          <Logo width="160px" />
         </div>
 
         {/* Navigation */}

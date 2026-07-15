@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
-import { Leaf, Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
+import Logo from "./Logo";
 
 export default function Footer() {
   return (
@@ -8,9 +11,8 @@ export default function Footer() {
         <div style={footerStyles.grid}>
           {/* Brand Info */}
           <div style={footerStyles.brandCol}>
-            <div style={footerStyles.logo}>
-              <Leaf size={20} color="var(--primary)" />
-              <span style={footerStyles.brandName}>Linea<span style={{ color: "var(--primary)" }}>Verde</span></span>
+            <div style={{ ...footerStyles.logo, cursor: "pointer" }} onClick={() => window.location.href = "/"}>
+              <Logo width="175px" showSlogan={true} />
             </div>
             <p style={footerStyles.brandText}>
               Ofrecemos productos sostenibles, biodegradables y de alta calidad para el cuidado personal y el hogar. Compra consciente, vive verde.
@@ -42,7 +44,7 @@ export default function Footer() {
               </li>
               <li style={footerStyles.contactItem}>
                 <MapPin size={16} color="var(--primary)" />
-                <span style={footerStyles.contactText}>Av. Principal 123, Miraflores</span>
+                <span style={footerStyles.contactText}>Parque Industrial, PI-45B, Santa Cruz, Bolivia</span>
               </li>
             </ul>
           </div>
